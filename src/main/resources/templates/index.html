@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+<head>
+    <title>Trang chủ - News Portal</title>
+</head>
+<body>
+    <main th:fragment="content">
+        <div class="container mt-4">
+            <!-- Alert Messages -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <span th:text="${success}">Thành công!</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span th:text="${error}">Có lỗi xảy ra!</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Search Box -->
+            <div class="search-box">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <h2 class="text-center mb-4">
+                                <i class="fas fa-search me-2"></i>Tìm kiếm tin tức
+                            </h2>
+                            <form action="/search" method="get">
+                                <div class="input-group">
+                                    <input type="text" class="form-control form-control-lg" name="keyword" 
+                                           placeholder="Nhập từ khóa tìm kiếm...">
+                                    <button class="btn btn-light btn-lg" type="submit">
+                                        <i class="fas fa-search"></i> Tìm kiếm
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Main Content -->
+                <div class="col-lg-8">
+                    <h3 class="mb-4">
+                        <i class="fas fa-newspaper me-2"></i>Tin tức mới nhất
+                    </h3>
+                    
+                    <!-- Debug Info -->
+                    <div class="alert alert-info">
+                        <p>Debug: newsPage = <span th:text="${newsPage}">null</span></p>
+                        <p>Debug: newsPage.empty = <span th:text="${newsPage?.empty}">null</span></p>
+                        <p>Debug: newsPage.content.size = <span th:text="${newsPage?.content?.size()}">null</span></p>
+                        <p>Debug: latestNews.size = <span th:text="${latestNews?.size()}">null</span></p>
+                        <p>Debug: popularNews.size = <span th:text="${popularNews?.size()}">null</span></p>
+                    </div>
+                    
+                    <!-- Test Simple Content -->
+                    <div class="alert alert-success">
+                        <h4>Test Content</h4>
+                        <p>Nếu bạn thấy đoạn text này, có nghĩa là template đang hoạt động!</p>
+                        <p>Current time: <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm:ss')}">now</span></p>
+                    </div>
+                    
+                    <!-- News Grid -->
+                    <div class="row" th:if="${newsPage != null and !newsPage.empty}">
+                        <div class="col-md-6 mb-4" th:each="news : ${newsPage.content}">
+                            <div class="card news-card h-100">
+                                <img th:src="${news.imageUrl}" 
+                                     th:alt="${news.title}"
+                                     class="card-img-top news-image"
+                                     onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=400&fit=crop'">
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title" th:text="${news.title}">Tiêu đề bài viết</h5>
+                                    <p class="card-text flex-grow-1" th:text="${news.summary}">Tóm tắt bài viết...</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-user me-1"></i>
+                                            <span th:text="${news.author.username}">Tác giả</span>
+                                            <i class="fas fa-calendar ms-2 me-1"></i>
+                                            <span th:text="${#temporals.format(news.createdAt, 'dd/MM/yyyy')}">Ngày</span>
+                                        </small>
+                                        <a th:href="@{/news/{id}(id=${news.id})}" class="btn btn-primary btn-sm">
+                                            Đọc tiếp <i class="fas fa-arrow-right ms-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- No News Message -->
+                    <div th:if="${newsPage == null or newsPage.empty}" class="text-center py-5">
+                        <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">Chưa có tin tức nào</h4>
+                        <p class="text-muted">Hãy quay lại sau để xem tin tức mới nhất.</p>
+                    </div>
+
+                    <!-- Pagination -->
+                    <nav th:if="${newsPage != null and newsPage.totalPages > 1}" aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                <a class="page-link" th:href="@{/(page=${currentPage - 1})}">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="page : ${#numbers.sequence(0, totalPages - 1)}"
+                                th:classappend="${page == currentPage} ? 'active'">
+                                <a class="page-link" th:href="@{/(page=${page})}" th:text="${page + 1}">1</a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                <a class="page-link" th:href="@{/(page=${currentPage + 1})}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <div class="sidebar">
+                        <!-- Latest News -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">
+                                <i class="fas fa-clock me-2"></i>Tin mới nhất
+                            </h5>
+                            <div th:each="news : ${latestNews}" class="d-flex mb-3">
+                                <img th:src="${news.imageUrl}" 
+                                     th:alt="${news.title}"
+                                     class="rounded me-3" 
+                                     style="width: 60px; height: 60px; object-fit: cover;"
+                                     onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=100&h=100&fit=crop'">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">
+                                        <a th:href="@{/news/{id}(id=${news.id})}" 
+                                           th:text="${news.title}" 
+                                           class="text-decoration-none">
+                                            Tiêu đề
+                                        </a>
+                                    </h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        <span th:text="${#temporals.format(news.createdAt, 'dd/MM/yyyy')}">Ngày</span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Popular News -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">
+                                <i class="fas fa-fire me-2"></i>Tin phổ biến
+                            </h5>
+                            <div th:each="news : ${popularNews}" class="d-flex mb-3">
+                                <img th:src="${news.imageUrl}" 
+                                     th:alt="${news.title}"
+                                     class="rounded me-3" 
+                                     style="width: 60px; height: 60px; object-fit: cover;"
+                                     onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=100&h=100&fit=crop'">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">
+                                        <a th:href="@{/news/{id}(id=${news.id})}" 
+                                           th:text="${news.title}" 
+                                           class="text-decoration-none">
+                                            Tiêu đề
+                                        </a>
+                                    </h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-eye me-1"></i>
+                                        <span th:text="${news.viewCount}">0</span> lượt xem
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Links -->
+                        <div>
+                            <h5 class="mb-3">
+                                <i class="fas fa-link me-2"></i>Liên kết nhanh
+                            </h5>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <a href="/about" class="text-decoration-none">
+                                        <i class="fas fa-info-circle me-2"></i>Giới thiệu
+                                    </a>
+                                </li>
+                                <li class="mb-2">
+                                    <a href="/contact" class="text-decoration-none">
+                                        <i class="fas fa-envelope me-2"></i>Liên hệ
+                                    </a>
+                                </li>
+                                <li class="mb-2" sec:authorize="isAuthenticated() and hasRole('ADMIN')">
+                                    <a href="/admin/dashboard" class="text-decoration-none">
+                                        <i class="fas fa-cog me-2"></i>Quản trị
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

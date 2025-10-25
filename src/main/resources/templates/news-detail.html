@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+<head>
+    <title th:text="${news.title} + ' - News Portal'">Chi tiết tin tức</title>
+</head>
+<body>
+    <main th:fragment="content">
+        <div class="container mt-4">
+            <!-- Alert Messages -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <span th:text="${success}">Thành công!</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span th:text="${error}">Có lỗi xảy ra!</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="row">
+                <!-- Main Content -->
+                <div class="col-lg-8">
+                    <!-- News Article -->
+                    <article class="card">
+                        <img th:src="${news.imageUrl}" 
+                             th:alt="${news.title}"
+                             class="card-img-top" 
+                             style="height: 400px; object-fit: cover;"
+                             onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=400&fit=crop'">
+                        
+                        <div class="card-body">
+                            <h1 class="card-title mb-3" th:text="${news.title}">Tiêu đề bài viết</h1>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div class="d-flex align-items-center">
+                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
+                                         class="rounded-circle me-2" width="40" height="40">
+                                    <div>
+                                        <strong th:text="${news.author.username}">Tác giả</strong><br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            <span th:text="${#temporals.format(news.createdAt, 'dd/MM/yyyy HH:mm')}">Ngày đăng</span>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="text-muted">
+                                    <i class="fas fa-eye me-1"></i>
+                                    <span th:text="${news.viewCount}">0</span> lượt xem
+                                </div>
+                            </div>
+                            
+                            <div class="news-content" th:utext="${news.content}">
+                                Nội dung bài viết...
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Comments Section -->
+                    <div class="mt-5">
+                        <h4 class="mb-4">
+                            <i class="fas fa-comments me-2"></i>Bình luận 
+                            <span class="badge bg-primary" th:text="${news.comments.size()}">0</span>
+                        </h4>
+
+                        <!-- Add Comment Form -->
+                        <div class="card mb-4" sec:authorize="isAuthenticated()">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-edit me-2"></i>Viết bình luận
+                                </h6>
+                                <form th:action="@{/news/{id}/comment(id=${news.id})}" method="post">
+                                    <div class="mb-3">
+                                        <textarea class="form-control" name="content" rows="3" 
+                                                  placeholder="Nhập bình luận của bạn..." required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane me-2"></i>Gửi bình luận
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Login Prompt -->
+                        <div class="card mb-4" sec:authorize="!isAuthenticated()">
+                            <div class="card-body text-center">
+                                <i class="fas fa-lock fa-2x text-muted mb-3"></i>
+                                <h6>Đăng nhập để bình luận</h6>
+                                <p class="text-muted">Bạn cần đăng nhập để có thể bình luận bài viết này.</p>
+                                <a href="/login" class="btn btn-primary">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Comments List -->
+                        <div th:if="${news.comments != null and !news.comments.empty}">
+                            <div th:each="comment : ${news.comments}" class="card mb-3" th:if="${comment.isApproved}">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
+                                             class="rounded-circle me-3" width="40" height="40">
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="mb-0" th:text="${comment.user.username}">Người dùng</h6>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    <span th:text="${#temporals.format(comment.createdAt, 'dd/MM/yyyy HH:mm')}">Thời gian</span>
+                                                </small>
+                                            </div>
+                                            <p class="mb-0" th:text="${comment.content}">Nội dung bình luận</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- No Comments -->
+                        <div th:if="${news.comments == null or news.comments.empty}" class="text-center py-4">
+                            <i class="fas fa-comment-slash fa-2x text-muted mb-3"></i>
+                            <h6 class="text-muted">Chưa có bình luận nào</h6>
+                            <p class="text-muted">Hãy là người đầu tiên bình luận bài viết này!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <div class="sidebar">
+                        <!-- Back to Home -->
+                        <div class="mb-4">
+                            <a href="/" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left me-2"></i>Về trang chủ
+                            </a>
+                        </div>
+
+                        <!-- Share -->
+                        <div class="mb-4">
+                            <h6 class="mb-3">
+                                <i class="fas fa-share-alt me-2"></i>Chia sẻ
+                            </h6>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-facebook-f"></i>
+                                </button>
+                                <button class="btn btn-outline-info btn-sm">
+                                    <i class="fab fa-twitter"></i>
+                                </button>
+                                <button class="btn btn-outline-success btn-sm">
+                                    <i class="fab fa-whatsapp"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Related News -->
+                        <div>
+                            <h6 class="mb-3">
+                                <i class="fas fa-newspaper me-2"></i>Tin liên quan
+                            </h6>
+                            <div class="d-flex mb-3">
+                                <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=60&h=60&fit=crop" 
+                                     class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">
+                                        <a href="#" class="text-decoration-none">Tin tức liên quan</a>
+                                    </h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>Hôm nay
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

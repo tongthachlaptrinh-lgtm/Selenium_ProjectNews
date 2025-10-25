@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:fragment="layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} ?: 'News Portal'">News Portal</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .news-card {
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .news-image {
+            height: 200px;
+            object-fit: cover;
+        }
+        .sidebar {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .footer {
+            background: #343a40;
+            color: white;
+            margin-top: 50px;
+        }
+        .search-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 30px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-newspaper me-2"></i>News Portal
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">Giới thiệu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact">Liên hệ</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <span class="navbar-text me-3">
+                            Xin chào, <strong sec:authentication="name">User</strong>
+                        </span>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated() and hasRole('ADMIN')">
+                        <a class="nav-link" href="/admin/dashboard">
+                            <i class="fas fa-cog me-1"></i>Quản trị
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/logout">
+                            <i class="fas fa-sign-out-alt me-1"></i>Đăng xuất
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" href="/login">
+                            <i class="fas fa-sign-in-alt me-1"></i>Đăng nhập
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" href="/register">
+                            <i class="fas fa-user-plus me-1"></i>Đăng ký
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search Box -->
+    <div class="search-box" th:unless="${#strings.isEmpty(searchKeyword)}">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <form action="/search" method="get">
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-lg" name="keyword" 
+                                   placeholder="Tìm kiếm tin tức..." th:value="${keyword}">
+                            <button class="btn btn-light btn-lg" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main th:fragment="content">
+        <!-- Content will be inserted here -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-newspaper me-2"></i>News Portal</h5>
+                    <p>Website tin tức hàng đầu Việt Nam với công nghệ hiện đại và kiểm thử tự động Selenium.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h6>Liên kết</h6>
+                    <a href="/about" class="text-light me-3">Giới thiệu</a>
+                    <a href="/contact" class="text-light me-3">Liên hệ</a>
+                    <a href="/admin/dashboard" class="text-light" sec:authorize="isAuthenticated() and hasRole('ADMIN')">Quản trị</a>
+                </div>
+            </div>
+            <hr class="my-3">
+            <div class="text-center">
+                <p>&copy; 2024 News Portal. Dự án kiểm thử Selenium - IUH FIT SE.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script>
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+</body>
+</html>
