@@ -13,18 +13,8 @@ public class AddNewsTest extends BaseSeleniumTest {
     public void testAddNewsAsAdmin() {
         printTestInfo("Testing add news functionality as admin");
         
-        // First login as admin
-        navigateToLoginPage();
-        WebElement usernameField = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("username")));
-        usernameField.sendKeys("admin");
-        WebElement passwordField = driver.findElement(By.name("password"));
-        passwordField.sendKeys("123456");
-        WebElement loginButton = driver.findElement(By.cssSelector("button[type='submit']"));
-        loginButton.click();
-        
-        // Wait for login to complete
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Đăng xuất")));
-        printTestInfo("Successfully logged in as admin");
+        // Login as admin using helper method
+        loginAsAdmin();
         
         // Navigate to add news page
         driver.get(baseUrl + "/admin/news/add");
@@ -101,18 +91,8 @@ public class AddNewsTest extends BaseSeleniumTest {
     public void testAddNewsAsRegularUser() {
         printTestInfo("Testing add news functionality as regular user");
         
-        // First login as regular user
-        navigateToLoginPage();
-        WebElement usernameField = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("username")));
-        usernameField.sendKeys("user");
-        WebElement passwordField = driver.findElement(By.name("password"));
-        passwordField.sendKeys("123456");
-        WebElement loginButton = driver.findElement(By.cssSelector("button[type='submit']"));
-        loginButton.click();
-        
-        // Wait for login to complete
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Đăng xuất")));
-        printTestInfo("Successfully logged in as regular user");
+        // Login as regular user using helper method
+        loginAsUser();
         
         // Try to access add news page
         driver.get(baseUrl + "/admin/news/add");
@@ -139,17 +119,8 @@ public class AddNewsTest extends BaseSeleniumTest {
     public void testAddNewsWithEmptyFields() {
         printTestInfo("Testing add news with empty required fields");
         
-        // First login as admin
-        navigateToLoginPage();
-        WebElement usernameField = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("username")));
-        usernameField.sendKeys("admin");
-        WebElement passwordField = driver.findElement(By.name("password"));
-        passwordField.sendKeys("123456");
-        WebElement loginButton = driver.findElement(By.cssSelector("button[type='submit']"));
-        loginButton.click();
-        
-        // Wait for login to complete
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Đăng xuất")));
+        // Login as admin using helper method
+        loginAsAdmin();
         
         // Navigate to add news page
         driver.get(baseUrl + "/admin/news/add");
@@ -174,17 +145,8 @@ public class AddNewsTest extends BaseSeleniumTest {
     public void testAddNewsWithInvalidImageUrl() {
         printTestInfo("Testing add news with invalid image URL");
         
-        // First login as admin
-        navigateToLoginPage();
-        WebElement usernameField = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("username")));
-        usernameField.sendKeys("admin");
-        WebElement passwordField = driver.findElement(By.name("password"));
-        passwordField.sendKeys("123456");
-        WebElement loginButton = driver.findElement(By.cssSelector("button[type='submit']"));
-        loginButton.click();
-        
-        // Wait for login to complete
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Đăng xuất")));
+        // Login as admin using helper method
+        loginAsAdmin();
         
         // Navigate to add news page
         driver.get(baseUrl + "/admin/news/add");
@@ -224,17 +186,8 @@ public class AddNewsTest extends BaseSeleniumTest {
     public void testAdminDashboardAccess() {
         printTestInfo("Testing admin dashboard access");
         
-        // First login as admin
-        navigateToLoginPage();
-        WebElement usernameField = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("username")));
-        usernameField.sendKeys("admin");
-        WebElement passwordField = driver.findElement(By.name("password"));
-        passwordField.sendKeys("123456");
-        WebElement loginButton = driver.findElement(By.cssSelector("button[type='submit']"));
-        loginButton.click();
-        
-        // Wait for login to complete
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Đăng xuất")));
+        // Login as admin using helper method
+        loginAsAdmin();
         
         // Navigate to admin dashboard
         driver.get(baseUrl + "/admin/dashboard");

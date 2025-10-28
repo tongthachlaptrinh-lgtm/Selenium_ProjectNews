@@ -20,14 +20,14 @@ INSERT INTO categories (name, description, created_at) VALUES
 ('Kinh tế', 'Tin tức kinh tế, tài chính', NOW()),
 ('Xã hội', 'Tin tức xã hội, đời sống', NOW());
 
--- Thêm người dùng (password không hash)
--- admin/password
--- user/password  
--- editor/password
+-- Thêm người dùng (password không hash - PasswordConfig so sánh trực tiếp)
+-- admin/123456
+-- user/123456  
+-- editor/123456
 INSERT INTO users (username, password, role, created_at, is_active) VALUES
-('admin', 'password', 'ADMIN', NOW(), true),
-('user', 'password', 'USER', NOW(), true),
-('editor', 'password', 'ADMIN', NOW(), true);
+('admin', '123456', 'ADMIN', NOW(), true),
+('user', '123456', 'USER', NOW(), true),
+('editor', '123456', 'ADMIN', NOW(), true);
 
 -- Thêm tin tức
 INSERT INTO news (title, content, summary, image_url, view_count, is_published, created_at, updated_at, author_id, category_id) VALUES

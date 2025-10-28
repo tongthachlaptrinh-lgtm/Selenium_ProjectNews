@@ -3,9 +3,12 @@ package edu.iuh.fit.se.project_selenium.selenium;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -22,7 +25,7 @@ public class BaseSeleniumTest {
         
         // Configure Chrome options
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless"); // Run in headless mode for CI/CD
+        // options.addArguments("--headless"); // TẮT headless để xem browser tự động chạy! 🎉
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--window-size=1920,1080");
@@ -40,6 +43,12 @@ public class BaseSeleniumTest {
     @AfterEach
     public void tearDown() {
         if (driver != null) {
+            try {
+                Thread.sleep(10000); // Đợi 10 giây trước khi đóng browser để DEMO cho giảng viên! 🎓
+                System.out.println("⏱️  Browser sẽ đóng sau 10 giây...");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             driver.quit();
             System.out.println("✅ WebDriver closed successfully");
         }
@@ -75,5 +84,56 @@ public class BaseSeleniumTest {
 
     protected void printTestInfo(String info) {
         System.out.println("ℹ️  " + info);
+    }
+
+    /**
+     * Helper method to login with credentials
+     */
+    protected void login(String username, String password) {
+        navigateToLoginPage();
+        WebElement usernameField = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("username")));
+        usernameField.sendKeys(username);
+        WebElement passwordField = driver.findElement(By.name("password"));
+        passwordField.sendKeys(password);
+        WebElement loginButton = driver.findElement(By.cssSelector("button[type='submit']"));
+        loginButton.click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.linkText("Đăng xuất")));
+        printTestInfo("Logged in as: " + username);
+    }
+
+    /**
+     * Helper method to login as admin
+     */
+    protected void loginAsAdmin() {
+        login("admin", "123456");
+    }
+
+    /**
+     * Helper method to login as regular user
+     */
+    protected void loginAsUser() {
+        login("user", "123456");
+    }
+
+    /**
+     * Wait for page to load completely
+     */
+    protected void waitForPageLoad() {
+        try {
+            Thread.sleep(2000); // Tăng từ 1s lên 2s để dễ nhìn hơn
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Wait for a moment (for demo purposes)
+     */
+    protected void sleep(int seconds) {
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

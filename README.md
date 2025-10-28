@@ -102,7 +102,7 @@ mvn clean install
 mvn spring-boot:run
 ```
 
-Ứng dụng sẽ chạy tại: **http://localhost:8080**
+Ứng dụng sẽ chạy tại: **http://localhost:8081**
 
 ### 5. Tài khoản demo
 
@@ -113,43 +113,303 @@ mvn spring-boot:run
 
 ## 🧪 Chạy kiểm thử Selenium
 
-### 1. Chạy tất cả test cases
+### ⚠️ QUAN TRỌNG: Trước khi chạy test
 
-```bash
-# Chạy tất cả Selenium tests
-mvn test
+1. **Đảm bảo ứng dụng đang chạy** trên port **8081**:
+   ```bash
+   mvn spring-boot:run
+   ```
 
-# Chạy với verbose output
-mvn test -Dtest="*Selenium*" -X
+2. **Kiểm tra database** đã có dữ liệu từ `data.sql`
+
+3. **Kiểm tra Chrome browser** đã được cài đặt
+
+---
+
+### 🤖 SELENIUM TỰ ĐỘNG LÀM GÌ?
+
+**Selenium hoạt động như một ROBOT tự động** trên trình duyệt:
+
+✅ **Tự động mở Chrome browser**  
+✅ **Tự động điều hướng** đến các trang web  
+✅ **Tự động nhập text** vào các ô input (username, password, v.v.)  
+✅ **Tự động click** vào các button/link  
+✅ **Tự động submit form** (đăng nhập, đăng ký, v.v.)  
+✅ **Tự động kiểm tra kết quả** (xem có thành công hay không)  
+✅ **Tự động đóng browser** sau khi xong  
+
+**Ví dụ:** Khi chạy test đăng nhập:
+```
+1. Selenium mở Chrome → http://localhost:8081/login
+2. Tự động nhập username: admin
+3. Tự động nhập password: 123456
+4. Tự động click nút "Đăng nhập"
+5. Kiểm tra xem có nút "Đăng xuất" không → Nếu có = PASS ✅
+6. Đóng browser
 ```
 
-### 2. Chạy từng test class riêng lẻ
+Bạn **không cần làm gì**, chỉ cần chạy test và xem kết quả! 🎉
 
+---
+
+### 🔍 LOGIC CODE CỦA TESTS
+
+#### 📌 **BaseSeleniumTest.java** - Base Configuration
+```java
+protected String baseUrl = "http://localhost:8081";  // ← Đang cố kết nối đến đây!
+```
+
+#### 📌 **application.properties** - Server Config
+```properties
+server.port=8081  // ← Application chạy trên port 8081
+```
+
+#### 💡 **Logic hoạt động:**
+
+**1. Khi bạn chạy `mvn spring-boot:run`:**
+```java
+✅ Application khởi động
+✅ Listens trên port 8081
+✅ Sẵn sàng nhận requests từ Selenium
+```
+
+**2. Khi bạn chạy `mvn test`:**
+```java
+✅ Selenium mở Chrome
+✅ Cố kết nối đến: http://localhost:8081  // ← baseUrl
+```
+
+**3. Nếu application CHƯA chạy:**
+```java
+❌ Connection refused!
+❌ Test FAIL ngay lập tức
+❌ Error: "Connection refused to localhost:8081"
+```
+
+**4. Nếu application ĐANG chạy:**
+```java
+✅ Kết nối thành công
+✅ Selenium bắt đầu test các chức năng
+✅ Mở trang login, nhập text, click button, v.v.
+```
+
+#### 🎯 **KẾT LUẬN:**
+> **Application PHẢI chạy TRƯỚC để Selenium có thể kết nối và test!**
+> 
+> Đây là logic đúng ✅ - Test không thể chạy nếu không có app để test!
+
+---
+
+### 📝 HƯỚNG DẪN CHẠY TEST CHI TIẾT
+
+#### 🎯 **Cách 1: Chạy Test trong IDE (IntelliJ IDEA / Eclipse)**
+
+> ⚠️ **NHỚ:** Bạn PHẢI chạy ứng dụng TRƯỚC, sau đó mới chạy test!
+
+**📌 BƯỚC 1: Chạy ứng dụng (Giao diện web)**
 ```bash
-# Test đăng nhập
+# Mở Terminal trong IDE hoặc Command Prompt
+mvn spring-boot:run
+```
+- Đợi thấy dòng: `Started ProjectSeleniumApplication in X seconds`
+- Application chạy tại: **http://localhost:8081**
+- **KHÔNG đóng terminal này** (để application tiếp tục chạy)
+
+**📌 BƯỚC 2: Chạy Test (Terminal MỚI hoặc trong IDE)**
+- Right-click vào package `selenium`
+- Chọn **"Run All Tests"** hoặc **"Run 'Tests in selenium'"**
+
+**📌 BƯỚC 3: Xem kết quả**
+- IDE hiển thị: ✅ PASSED hoặc ❌ FAILED
+- Log chi tiết trong console
+
+---
+
+#### 🖥️ **Cách 2: Chạy Test từ Command Line**
+
+> ⚠️ **NHỚ:** Cần 2 terminal - 1 để chạy app, 1 để chạy test!
+
+**📌 Terminal 1 - Chạy ứng dụng:**
+```bash
+cd T:\Selenium\Project_Selenium
+mvn spring-boot:run
+```
+⏸️ **Đợi app chạy xong** → Sẽ thấy: `Started ProjectSeleniumApplication`
+
+**📌 Terminal 2 - Chạy test:**
+```bash
+cd T:\Selenium\Project_Selenium
+mvn test
+```
+
+**Kết quả:**
+```
+[INFO] Running edu.iuh.fit.se.project_selenium.selenium.LoginTest
+✅ Selenium WebDriver initialized successfully
+🌐 Navigated to login page: http://localhost:8081/login
+✅ Successful Login Test - PASSED
+[INFO] Tests run: 35, Failures: 0, Errors: 0, Skipped: 0
+```
+
+✅ **Success!** Test tự động kiểm tra tất cả chức năng!
+
+---
+
+#### 💡 **TÓM TẮT NHANH:**
+```
+1️⃣ Terminal 1: mvn spring-boot:run  ← Chạy ứng dụng
+   ⬇️ Đợi... Started
+   
+2️⃣ Terminal 2: mvn test            ← Chạy test
+   ⬇️ Đợi... Tests run: X
+
+✅ XONG! Xem kết quả ✅/❌
+```
+
+---
+
+#### 🎨 **Cách 3: Chạy Test với Browser hiển thị (Non-Headless)**
+
+**Bước 1:** Mở file `BaseSeleniumTest.java`
+
+**Bước 2:** Comment dòng headless:
+```java
+// options.addArguments("--headless"); // Comment dòng này
+```
+
+**Bước 3:** Save và chạy test lại
+
+**Kết quả:** Browser sẽ hiển thị và bạn có thể xem các thao tác test
+
+---
+
+### 📊 Danh sách Test Cases chi tiết
+
+#### 1️⃣ **LoginTest** - Test đăng nhập
+```bash
 mvn test -Dtest="LoginTest"
+```
+- ✅ `testSuccessfulLogin`: Đăng nhập admin thành công
+- ✅ `testUserLogin`: Đăng nhập user thường thành công  
+- ❌ `testFailedLoginWithWrongPassword`: Login với password sai
+- ❌ `testLoginWithEmptyCredentials`: Login với trường trống
+- ✅ `testLogout`: Đăng xuất thành công
 
-# Test tìm kiếm
-mvn test -Dtest="SearchNewsTest"
+#### 2️⃣ **RegisterTest** - Test đăng ký (MỚI)
+```bash
+mvn test -Dtest="RegisterTest"
+```
+- ✅ `testSuccessfulRegistration`: Đăng ký user mới thành công
+- ❌ `testRegistrationWithExistingUsername`: Đăng ký với username đã tồn tại
+- ❌ `testRegistrationWithShortPassword`: Password quá ngắn (< 6 ký tự)
+- ❌ `testRegistrationWithEmptyFields`: Đăng ký với trường bắt buộc trống
 
-# Test bình luận
-mvn test -Dtest="CommentTest"
-
-# Test thêm bài viết
-mvn test -Dtest="AddNewsTest"
-
-# Test điều hướng
+#### 3️⃣ **NavigationTest** - Test điều hướng
+```bash
 mvn test -Dtest="NavigationTest"
 ```
+- ✅ `testHomePageNavigation`: Kiểm tra trang chủ
+- ✅ `testNewsDetailNavigation`: Xem chi tiết tin tức
+- ✅ `testLoginPageNavigation`: Điều hướng trang login
+- ✅ `testRegisterPageNavigation`: Điều hướng trang register
+- ✅ `testSearchResultsNavigation`: Điều hướng trang tìm kiếm
+- ✅ `testAdminNavigation`: Admin truy cập dashboard
+- ✅ `testBreadcrumbNavigation`: Điều hướng breadcrumb
+- ✅ `testResponsiveNavigation`: Test responsive design
 
-### 3. Chạy với Chrome hiển thị (không headless)
-
-Để xem browser khi chạy test, chỉnh sửa file `BaseSeleniumTest.java`:
-
-```java
-// Comment dòng này để không chạy headless
-// options.addArguments("--headless");
+#### 4️⃣ **SearchNewsTest** - Test tìm kiếm
+```bash
+mvn test -Dtest="SearchNewsTest"
 ```
+- ✅ `testSearchWithValidKeyword`: Tìm với từ khóa hợp lệ ("Công nghệ")
+- ✅ `testSearchWithEmptyKeyword`: Tìm với từ khóa trống
+- ✅ `testSearchWithNonExistentKeyword`: Từ khóa không tồn tại
+- ✅ `testSearchWithPartialKeyword`: Từ khóa một phần ("AI")
+- ✅ `testSearchFromNewsDetailPage`: Tìm từ trang chi tiết
+
+#### 5️⃣ **CommentTest** - Test bình luận
+```bash
+mvn test -Dtest="CommentTest"
+```
+- ✅ `testAddCommentAsLoggedInUser`: Thêm bình luận khi đã login
+- ❌ `testAddCommentWithoutLogin`: Chưa login không thể comment
+- ❌ `testAddEmptyComment`: Comment trống không được gửi
+- ✅ `testViewExistingComments`: Xem các bình luận có sẵn
+- ❌ `testCommentCharacterLimit`: Comment quá dài (> 1000 ký tự)
+
+#### 6️⃣ **AddNewsTest** - Test thêm tin tức (Admin)
+```bash
+mvn test -Dtest="AddNewsTest"
+```
+- ✅ `testAddNewsAsAdmin`: Admin thêm tin tức thành công
+- ❌ `testAddNewsWithoutLogin`: Chưa login không thể thêm tin
+- ❌ `testAddNewsAsRegularUser`: User thường không thể thêm tin
+- ❌ `testAddNewsWithEmptyFields`: Thêm tin với trường bắt buộc trống
+- ✅ `testAddNewsWithInvalidImageUrl`: Thêm tin với URL hình ảnh không hợp lệ
+- ✅ `testAdminDashboardAccess`: Truy cập admin dashboard
+
+#### 7️⃣ **NewsManagementTest** - Test quản lý tin tức (MỚI)
+```bash
+mvn test -Dtest="NewsManagementTest"
+```
+- ✅ `testNavigateToNewsList`: Admin xem danh sách tin tức
+- ❌ `testAccessAdminAsRegularUser`: User thường không thể truy cập admin area
+
+---
+
+### 📈 Xem kết quả chi tiết
+
+#### Console Output
+```
+✅ Selenium WebDriver initialized successfully
+🌐 Navigated to login page: http://localhost:8081/login
+ℹ️  Testing successful login with valid credentials
+ℹ️  Entered username: admin
+ℹ️  Entered password: 123456
+ℹ️  Clicked login button
+✅ Successful Login Test - PASSED
+✅ WebDriver closed successfully
+```
+
+#### Test Reports
+Sau khi chạy test, xem reports tại:
+- **Maven Surefire Reports**: `target/surefire-reports/index.html`
+- **JUnit Reports**: `target/site/surefire-report.html`
+
+Mở file bằng browser để xem kết quả chi tiết!
+
+---
+
+### 🔍 Debug Test Cases
+
+#### Nếu test bị fail:
+
+1. **Kiểm tra ứng dụng có đang chạy không:**
+   ```bash
+   curl http://localhost:8081
+   ```
+
+2. **Xem log chi tiết:**
+   ```bash
+   mvn test -X
+   ```
+
+3. **Chạy từng test để tìm lỗi:**
+   ```bash
+   mvn test -Dtest="LoginTest#testSuccessfulLogin"
+   ```
+
+4. **Tắt headless để xem browser:**
+   - Mở `BaseSeleniumTest.java`
+   - Comment dòng: `// options.addArguments("--headless");`
+   - Chạy lại test
+
+#### Common Issues:
+
+❌ **Connection refused**: Ứng dụng chưa chạy → `mvn spring-boot:run`  
+❌ **Element not found**: UI đã thay đổi → Cập nhật selector trong test  
+❌ **Timeout**: Ứng dụng chậm → Tăng timeout trong test  
+❌ **ChromeDriver error**: Chrome chưa cài → Cài Chrome browser
 
 ## 📋 Danh sách Test Cases
 
