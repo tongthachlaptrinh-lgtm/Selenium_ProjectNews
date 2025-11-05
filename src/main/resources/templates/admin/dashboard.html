@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+<head>
+    <title>Quản trị - News Portal</title>
+</head>
+<body>
+    <main th:fragment="content">
+        <div class="container mt-4">
+            <!-- Alert Messages -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <span th:text="${success}">Thành công!</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span th:text="${error}">Có lỗi xảy ra!</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-4">
+                        <i class="fas fa-tachometer-alt me-2"></i>Bảng điều khiển quản trị
+                    </h2>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 th:text="${totalNews}">0</h4>
+                                    <p class="mb-0">Tổng bài viết</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-newspaper fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4>5</h4>
+                                    <p class="mb-0">Danh mục</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-folder fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4>3</h4>
+                                    <p class="mb-0">Người dùng</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-users fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4>8</h4>
+                                    <p class="mb-0">Bình luận</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-comments fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-bolt me-2"></i>Thao tác nhanh
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 mb-2">
+                                    <a href="/admin/news/add" class="btn btn-primary w-100">
+                                        <i class="fas fa-plus me-2"></i>Thêm bài viết
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <a href="/admin/news" class="btn btn-outline-primary w-100">
+                                        <i class="fas fa-edit me-2"></i>Quản lý bài viết
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <a href="/admin/comments" class="btn btn-outline-warning w-100">
+                                        <i class="fas fa-comments me-2"></i>Duyệt bình luận
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <a href="/" class="btn btn-outline-success w-100">
+                                        <i class="fas fa-home me-2"></i>Về trang chủ
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Latest News -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-clock me-2"></i>Bài viết mới nhất
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div th:if="${latestNews != null and !latestNews.empty}">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Tiêu đề</th>
+                                                <th>Tác giả</th>
+                                                <th>Ngày đăng</th>
+                                                <th>Lượt xem</th>
+                                                <th>Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="news : ${latestNews}">
+                                                <td>
+                                                    <a th:href="@{/news/{id}(id=${news.id})}" 
+                                                       th:text="${news.title}" 
+                                                       class="text-decoration-none">
+                                                        Tiêu đề
+                                                    </a>
+                                                </td>
+                                                <td th:text="${news.author.username}">Tác giả</td>
+                                                <td th:text="${#temporals.format(news.createdAt, 'dd/MM/yyyy')}">Ngày</td>
+                                                <td th:text="${news.viewCount}">0</td>
+                                                <td>
+                                                    <a th:href="@{/admin/news/edit/{id}(id=${news.id})}" 
+                                                       class="btn btn-sm btn-outline-primary me-1">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a th:href="@{/admin/news/delete/{id}(id=${news.id})}" 
+                                                       class="btn btn-sm btn-outline-danger"
+                                                       onclick="return confirm('Bạn có chắc muốn xóa bài viết này?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div th:if="${latestNews == null or latestNews.empty}" class="text-center py-4">
+                                <i class="fas fa-newspaper fa-2x text-muted mb-3"></i>
+                                <h6 class="text-muted">Chưa có bài viết nào</h6>
+                                <a href="/admin/news/add" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Thêm bài viết đầu tiên
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

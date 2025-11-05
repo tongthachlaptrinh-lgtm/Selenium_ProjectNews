@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+<head>
+    <title>Thêm bài viết - News Portal</title>
+</head>
+<body>
+    <main th:fragment="content">
+        <div class="container mt-4">
+            <!-- Alert Messages -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <span th:text="${success}">Thành công!</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span th:text="${error}">Có lỗi xảy ra!</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>
+                            <i class="fas fa-plus me-2"></i>Thêm bài viết mới
+                        </h2>
+                        <a href="/admin/news" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <form th:action="@{/admin/news/add}" th:object="${news}" method="post">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">
+                                        <i class="fas fa-heading me-1"></i>Tiêu đề bài viết
+                                    </label>
+                                    <input type="text" class="form-control" id="title" th:field="*{title}" 
+                                           placeholder="Nhập tiêu đề bài viết" required>
+                                    <div class="form-text">Tiêu đề không được để trống và không quá 200 ký tự</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="summary" class="form-label">
+                                        <i class="fas fa-align-left me-1"></i>Tóm tắt
+                                    </label>
+                                    <textarea class="form-control" id="summary" th:field="*{summary}" 
+                                              rows="3" placeholder="Nhập tóm tắt bài viết"></textarea>
+                                    <div class="form-text">Tóm tắt không quá 500 ký tự</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="content" class="form-label">
+                                        <i class="fas fa-file-text me-1"></i>Nội dung bài viết
+                                    </label>
+                                    <textarea class="form-control" id="content" th:field="*{content}" 
+                                              rows="15" placeholder="Nhập nội dung bài viết" required></textarea>
+                                    <div class="form-text">Nội dung không được để trống</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="imageUrl" class="form-label">
+                                        <i class="fas fa-image me-1"></i>URL hình ảnh
+                                    </label>
+                                    <input type="url" class="form-control" id="imageUrl" th:field="*{imageUrl}" 
+                                           placeholder="https://example.com/image.jpg">
+                                    <div class="form-text">Nhập URL hình ảnh (tùy chọn)</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="category" class="form-label">
+                                        <i class="fas fa-folder me-1"></i>Danh mục
+                                    </label>
+                                    <select class="form-select" id="category" th:field="*{category}">
+                                        <option value="">Chọn danh mục</option>
+                                        <option th:each="category : ${categories}" 
+                                                th:value="${category.id}" 
+                                                th:text="${category.name}">
+                                            Danh mục
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Lưu bài viết
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="history.back()">
+                                        <i class="fas fa-times me-2"></i>Hủy
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <div class="sidebar">
+                        <!-- Tips -->
+                        <div class="mb-4">
+                            <h6 class="mb-3">
+                                <i class="fas fa-lightbulb me-2"></i>Mẹo viết bài
+                            </h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    Tiêu đề hấp dẫn và mô tả đúng nội dung
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    Tóm tắt ngắn gọn, súc tích
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    Nội dung có cấu trúc rõ ràng
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    Chọn hình ảnh chất lượng cao
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Preview -->
+                        <div>
+                            <h6 class="mb-3">
+                                <i class="fas fa-eye me-2"></i>Xem trước
+                            </h6>
+                            <div class="card">
+                                <img id="previewImage" src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=300&h=200&fit=crop" 
+                                     class="card-img-top" style="height: 200px; object-fit: cover;">
+                                <div class="card-body">
+                                    <h6 id="previewTitle" class="card-title">Tiêu đề bài viết</h6>
+                                    <p id="previewSummary" class="card-text small text-muted">Tóm tắt bài viết...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Preview functionality
+            document.getElementById('title').addEventListener('input', function() {
+                document.getElementById('previewTitle').textContent = this.value || 'Tiêu đề bài viết';
+            });
+
+            document.getElementById('summary').addEventListener('input', function() {
+                document.getElementById('previewSummary').textContent = this.value || 'Tóm tắt bài viết...';
+            });
+
+            document.getElementById('imageUrl').addEventListener('input', function() {
+                const previewImage = document.getElementById('previewImage');
+                if (this.value) {
+                    previewImage.src = this.value;
+                } else {
+                    previewImage.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=300&h=200&fit=crop';
+                }
+            });
+        </script>
+    </main>
+</body>
+</html>
