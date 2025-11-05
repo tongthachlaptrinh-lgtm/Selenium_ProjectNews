@@ -1,5 +1,3 @@
-## 📰 News Portal - Dự án Website Tin tức với Selenium Testing
-
 ## 🎯 Giới thiệu
 
 **News Portal** là một website tin tức được phát triển bằng **Java Spring Boot** với giao diện hiện đại và tích hợp **kiểm thử tự động bằng Selenium WebDriver**. Dự án này được thiết kế để phục vụ mục đích học tập và nghiên cứu về kiểm thử tự động trong phát triển web.

@@ -56,14 +56,14 @@
                         <p>Debug: latestNews.size = <span th:text="${latestNews?.size()}">null</span></p>
                         <p>Debug: popularNews.size = <span th:text="${popularNews?.size()}">null</span></p>
                     </div>
-                    
+
                     <!-- Test Simple Content -->
                     <div class="alert alert-success">
                         <h4>Test Content</h4>
                         <p>Nếu bạn thấy đoạn text này, có nghĩa là template đang hoạt động!</p>
                         <p>Current time: <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm:ss')}">now</span></p>
                     </div>
-                    
+
                     <!-- News Grid -->
                     <div class="row" th:if="${newsPage != null and !newsPage.empty}">
                         <div class="col-md-6 mb-4" th:each="news : ${newsPage.content}">
