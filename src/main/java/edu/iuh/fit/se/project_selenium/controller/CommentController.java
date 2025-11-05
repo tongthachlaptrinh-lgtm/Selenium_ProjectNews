@@ -33,24 +33,41 @@ public class CommentController {
                             Authentication authentication,
                             RedirectAttributes redirectAttributes) {
         
+        // Kiểm tra đăng nhập
         if (authentication == null || !authentication.isAuthenticated()) {
             redirectAttributes.addFlashAttribute("error", "Bạn cần đăng nhập để bình luận");
             return "redirect:/login";
         }
         
+        // Kiểm tra nội dung bình luận
+        if (content == null || content.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Nội dung bình luận không được để trống");
+            return "redirect:/news/" + newsId;
+        }
+
+        // Kiểm tra bài viết có tồn tại không
         News news = newsService.getNewsById(newsId).orElse(null);
         if (news == null) {
             redirectAttributes.addFlashAttribute("error", "Bài viết không tồn tại");
             return "redirect:/";
         }
         
-        User user = (User) authentication.getPrincipal();
-        
+        // Lấy thông tin user từ authentication
+        String username = authentication.getName();
+        User user = userService.findByUsername(username).orElse(null);
+
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("error", "Không tìm thấy thông tin người dùng");
+            return "redirect:/login";
+        }
+
+        // Tạo và lưu bình luận
         Comment comment = new Comment();
-        comment.setContent(content);
+        comment.setContent(content.trim());
         comment.setNews(news);
         comment.setUser(user);
-        
+        comment.setIsApproved(true); // Tự động duyệt bình luận
+
         commentService.saveComment(comment);
         
         redirectAttributes.addFlashAttribute("success", "Bình luận đã được gửi thành công!");

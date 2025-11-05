@@ -32,6 +32,20 @@ public class HomeController {
         Pageable pageable = PageRequest.of(page, size);
         Page<News> newsPage = newsService.getAllPublishedNews(pageable);
         
+        // DEBUG - Thêm log để kiểm tra
+        System.out.println("========== HOME CONTROLLER DEBUG ==========");
+        System.out.println("Total news in database: " + newsPage.getTotalElements());
+        System.out.println("News page size: " + newsPage.getContent().size());
+        System.out.println("Is empty: " + newsPage.isEmpty());
+        if (!newsPage.isEmpty()) {
+            newsPage.getContent().forEach(news -> {
+                System.out.println("  - News: " + news.getTitle() +
+                                 " | Published: " + news.getIsPublished() +
+                                 " | Author: " + (news.getAuthor() != null ? news.getAuthor().getUsername() : "NULL"));
+            });
+        }
+        System.out.println("===========================================");
+
         model.addAttribute("newsPage", newsPage);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", newsPage.getTotalPages());
@@ -40,6 +54,9 @@ public class HomeController {
         List<News> latestNews = newsService.getLatestNews(5);
         List<News> popularNews = newsService.getPopularNews(5);
         
+        System.out.println("Latest news count: " + latestNews.size());
+        System.out.println("Popular news count: " + popularNews.size());
+
         model.addAttribute("latestNews", latestNews);
         model.addAttribute("popularNews", popularNews);
         
