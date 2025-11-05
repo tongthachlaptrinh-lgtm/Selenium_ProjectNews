@@ -1,4 +1,4 @@
-# 📰 News Portal - Dự án Website Tin tức với Selenium Testing
+## 📰 News Portal - Dự án Website Tin tức với Selenium Testing
 
 ## 🎯 Giới thiệu
 
