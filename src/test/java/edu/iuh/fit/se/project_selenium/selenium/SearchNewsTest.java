@@ -18,8 +18,8 @@ public class SearchNewsTest extends BaseSeleniumTest {
         
         // Find search input field
         WebElement searchInput = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("keyword")));
-        searchInput.sendKeys("Công nghệ");
-        printTestInfo("Entered search keyword: Công nghệ");
+        searchInput.sendKeys("chứng khoán");
+        printTestInfo("Entered search keyword: chứng khoán");
         
         // Click search button
         WebElement searchButton = driver.findElement(By.cssSelector("button[type='submit']"));
@@ -37,7 +37,7 @@ public class SearchNewsTest extends BaseSeleniumTest {
         boolean hasSearchResults = driver.findElements(By.className("card")).size() > 0;
         
         // Check if keyword is displayed in the page
-        boolean keywordDisplayed = driver.getPageSource().contains("Công nghệ");
+        boolean keywordDisplayed = driver.getPageSource().contains("chứng khoán");
         
         boolean testPassed = onSearchPage && hasSearchResults && keywordDisplayed;
         printTestResult("Valid Keyword Search Test", testPassed);
@@ -145,7 +145,9 @@ public class SearchNewsTest extends BaseSeleniumTest {
         navigateToHomePage();
         
         // Click on first news article
-        WebElement firstNewsLink = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".news-card a")));
+        WebElement searchButton1 = driver.findElement(By.cssSelector("button[type='submit']"));
+        searchButton1.click();
+        WebElement firstNewsLink = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".card a")));
         firstNewsLink.click();
         printTestInfo("Clicked on first news article");
         

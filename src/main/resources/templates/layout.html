@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:fragment="layout (content)">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:fragment="layout">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -110,8 +108,29 @@
         </div>
     </nav>
 
-    <!-- Main Content - CONTENT SẼ ĐƯỢC INSERT VÀO ĐÂY -->
-    <th:block th:replace="${content}"/>
+    <!-- Search Box -->
+    <div class="search-box" th:unless="${#strings.isEmpty(searchKeyword)}">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <form action="/search" method="get">
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-lg" name="keyword" 
+                                   placeholder="Tìm kiếm tin tức..." th:value="${keyword}">
+                            <button class="btn btn-light btn-lg" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main th:fragment="content">
+        <!-- Content will be inserted here -->
+    </main>
 
     <!-- Footer -->
     <footer class="footer">
