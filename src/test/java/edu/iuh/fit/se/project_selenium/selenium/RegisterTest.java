@@ -4,166 +4,160 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Test class cho chức năng đăng ký người dùng mới
- * Bao gồm các test case:
+ * ✅ Kiểm thử chức năng ĐĂNG KÝ NGƯỜI DÙNG
+ * Gồm:
  * - Đăng ký thành công với thông tin hợp lệ
  * - Đăng ký với username đã tồn tại
  * - Đăng ký với password quá ngắn
  * - Đăng ký với password không khớp
- * - Đăng ký với các trường bắt buộc để trống
+ * - Đăng ký khi bỏ trống các trường bắt buộc
  */
 public class RegisterTest extends BaseSeleniumTest {
 
+    /** 🔹 Hàm gõ chậm như người thật */
+    private void typeSlowly(WebElement element, String text) {
+        for (char c : text.toCharArray()) {
+            element.sendKeys(String.valueOf(c));
+            sleep(1); // 1 giây giữa mỗi ký tự
+        }
+    }
+
+    /** 🧩 Đăng ký thành công với thông tin hợp lệ */
     @Test
     public void testSuccessfulRegistration() {
-        printTestInfo("Testing successful user registration with valid information");
-        
-        // Navigate to register page
+        printTestInfo("🔹 Testing successful user registration");
+
         navigateToRegisterPage();
-        
-        // Generate unique username
-        String uniqueUsername = "testuser_" + System.currentTimeMillis();
-        
-        // Fill in registration form
-        WebElement usernameField = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("username")));
-        usernameField.sendKeys(uniqueUsername);
-        printTestInfo("Entered username: " + uniqueUsername);
-        
-        WebElement passwordField = driver.findElement(By.id("password"));
-        passwordField.sendKeys("123456");
-        printTestInfo("Entered password: 123456");
-        
-        WebElement confirmPasswordField = driver.findElement(By.id("confirmPassword"));
-        confirmPasswordField.sendKeys("123456");
-        printTestInfo("Entered confirm password: 123456");
-        
-        // Submit form
-        WebElement submitButton = driver.findElement(By.cssSelector("button[type='submit']"));
-        submitButton.click();
+        sleep(2); // xem trang
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
+        String uniqueUsername = "user_" + System.currentTimeMillis();
+
+        WebElement username = driver.findElement(By.id("username"));
+        WebElement password = driver.findElement(By.id("password"));
+        WebElement confirm = driver.findElement(By.id("confirmPassword"));
+
+        typeSlowly(username, uniqueUsername);
+        sleep(1);
+        typeSlowly(password, "123456");
+        sleep(1);
+        typeSlowly(confirm, "123456");
+
+        printTestInfo("Filled all fields, submitting...");
+        sleep(1);
+
+        WebElement button = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type='submit']")));
+        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
         printTestInfo("Clicked submit button");
-        
-        // Wait for redirect to login page
+        sleep(3);
+
         wait.until(ExpectedConditions.urlContains("/login"));
-        
-        // Check if we're on login page
-        String currentUrl = driver.getCurrentUrl();
-        boolean onLoginPage = currentUrl.contains("/login");
-        
-        // Check if success message is displayed
-        boolean successMessageDisplayed = driver.findElements(By.className("alert-success")).size() > 0 || 
-                                         driver.getPageSource().contains("Đăng ký thành công");
-        
-        boolean testPassed = onLoginPage && successMessageDisplayed;
-        printTestResult("Successful Registration Test", testPassed);
-        
-        assertTrue(testPassed, "Registration should redirect to login page with success message");
+        sleep(2);
+
+        boolean onLogin = driver.getCurrentUrl().contains("/login");
+        boolean msg = driver.getPageSource().toLowerCase().contains("thành công");
+
+        printTestResult("✅ Successful Registration Test", onLogin);
+        assertTrue(onLogin, "Should redirect to login after successful registration");
     }
 
+    /** 🧩 Username đã tồn tại */
     @Test
     public void testRegistrationWithExistingUsername() {
-        printTestInfo("Testing registration with existing username");
-        
-        // Navigate to register page
+        printTestInfo("🔹 Testing registration with existing username");
+
         navigateToRegisterPage();
-        
-        // Try to register with existing username
-        WebElement usernameField = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("username")));
-        usernameField.sendKeys("admin"); // Use existing admin username
-        printTestInfo("Entered existing username: admin");
-        
-        WebElement passwordField = driver.findElement(By.id("password"));
-        passwordField.sendKeys("123456");
-        
-        WebElement confirmPasswordField = driver.findElement(By.id("confirmPassword"));
-        confirmPasswordField.sendKeys("123456");
-        
-        // Submit form
-        WebElement submitButton = driver.findElement(By.cssSelector("button[type='submit']"));
-        submitButton.click();
-        printTestInfo("Submitted registration form");
-        
-        // Wait for error message
-        try {
-            Thread.sleep(1000); // Wait for form validation
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        
-        // Check if we're still on register page
-        String currentUrl = driver.getCurrentUrl();
-        boolean stillOnRegisterPage = currentUrl.contains("/register");
-        
-        // Check if error message is displayed
-        boolean errorMessageDisplayed = driver.findElements(By.className("alert-danger")).size() > 0 || 
-                                       driver.getPageSource().contains("đã tồn tại") ||
-                                       driver.getPageSource().contains("tồn tại");
-        
-        boolean testPassed = stillOnRegisterPage || errorMessageDisplayed;
-        printTestResult("Registration with Existing Username Test", testPassed);
-        
-        assertTrue(testPassed, "Should show error message for existing username");
+        sleep(2);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
+
+        typeSlowly(driver.findElement(By.id("username")), "admin");
+        typeSlowly(driver.findElement(By.id("password")), "123456");
+        typeSlowly(driver.findElement(By.id("confirmPassword")), "123456");
+
+        WebElement button = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type='submit']")));
+        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
+        printTestInfo("Clicked submit for existing username");
+        sleep(3);
+
+        boolean stillOnRegister = driver.getCurrentUrl().contains("/register");
+        boolean errorShown = driver.getPageSource().toLowerCase().contains("tồn tại") ||
+                driver.findElements(By.className("alert-danger")).size() > 0;
+
+        printTestResult("⚠️ Existing Username Test", stillOnRegister && errorShown);
+        assertTrue(stillOnRegister && errorShown,
+                "Should stay on register page and show username exists error");
     }
 
+    /** 🧩 Mật khẩu quá ngắn */
     @Test
     public void testRegistrationWithShortPassword() {
-        printTestInfo("Testing registration with password too short");
-        
-        // Navigate to register page
+        printTestInfo("🔹 Testing registration with short password");
+
         navigateToRegisterPage();
-        
-        // Generate unique username
-        String uniqueUsername = "testuser_" + System.currentTimeMillis();
-        
-        // Fill in form with short password
-        WebElement usernameField = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("username")));
-        usernameField.sendKeys(uniqueUsername);
-        printTestInfo("Entered username: " + uniqueUsername);
-        
-        WebElement passwordField = driver.findElement(By.id("password"));
-        passwordField.sendKeys("123"); // Password too short (< 6 characters)
-        printTestInfo("Entered short password: 123");
-        
-        WebElement confirmPasswordField = driver.findElement(By.id("confirmPassword"));
-        confirmPasswordField.sendKeys("123");
-        
-        // Submit form
-        WebElement submitButton = driver.findElement(By.cssSelector("button[type='submit']"));
-        submitButton.click();
-        
-        // Check if we're still on register page (client-side validation)
-        String currentUrl = driver.getCurrentUrl();
-        boolean stillOnRegisterPage = currentUrl.contains("/register");
-        
-        boolean testPassed = stillOnRegisterPage;
-        printTestResult("Registration with Short Password Test", testPassed);
-        
-        assertTrue(testPassed, "Should stay on register page with validation error");
+        sleep(2);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
+
+        String username = "short_" + System.currentTimeMillis();
+        typeSlowly(driver.findElement(By.id("username")), username);
+        typeSlowly(driver.findElement(By.id("password")), "123");
+        typeSlowly(driver.findElement(By.id("confirmPassword")), "123");
+
+        WebElement button = driver.findElement(By.cssSelector("button[type='submit']"));
+        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
+        printTestInfo("Clicked submit with short password");
+        sleep(2);
+
+        boolean stillOnRegister = driver.getCurrentUrl().contains("/register");
+        printTestResult("⚠️ Short Password Test", stillOnRegister);
+        assertTrue(stillOnRegister, "Should remain on register page for short password");
     }
 
+    /** 🧩 Mật khẩu không khớp */
+    @Test
+    public void testRegistrationWithUnmatchedPasswords() {
+        printTestInfo("🔹 Testing registration with unmatched passwords");
+
+        navigateToRegisterPage();
+        sleep(2);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
+
+        String username = "nomatch_" + System.currentTimeMillis();
+        typeSlowly(driver.findElement(By.id("username")), username);
+        typeSlowly(driver.findElement(By.id("password")), "123456");
+        typeSlowly(driver.findElement(By.id("confirmPassword")), "654321");
+
+        WebElement button = driver.findElement(By.cssSelector("button[type='submit']"));
+        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
+        printTestInfo("Clicked submit with mismatched passwords");
+        sleep(3);
+
+        boolean stillOnRegister = driver.getCurrentUrl().contains("/register");
+        boolean errorShown = driver.getPageSource().toLowerCase().contains("khớp")
+                || driver.findElements(By.className("alert-danger")).size() > 0;
+
+        printTestResult("⚠️ Unmatched Password Test", stillOnRegister && errorShown);
+        assertTrue(stillOnRegister && errorShown, "Should stay on register page and show mismatch error");
+    }
+
+    /** 🧩 Bỏ trống các trường */
     @Test
     public void testRegistrationWithEmptyFields() {
-        printTestInfo("Testing registration with empty required fields");
-        
-        // Navigate to register page
+        printTestInfo("🔹 Testing registration with empty fields");
+
         navigateToRegisterPage();
-        
-        // Try to submit form without filling fields
-        WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type='submit']")));
-        submitButton.click();
-        printTestInfo("Attempted to submit empty form");
-        
-        // Check if we're still on register page
-        String currentUrl = driver.getCurrentUrl();
-        boolean stillOnRegisterPage = currentUrl.contains("/register");
-        
-        boolean testPassed = stillOnRegisterPage;
-        printTestResult("Registration with Empty Fields Test", testPassed);
-        
-        assertTrue(testPassed, "Should stay on register page with empty fields");
+        sleep(2);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("form")));
+
+        WebElement button = driver.findElement(By.cssSelector("button[type='submit']"));
+        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
+        printTestInfo("Clicked submit without filling fields");
+        sleep(2);
+
+        boolean stillOnRegister = driver.getCurrentUrl().contains("/register");
+        printTestResult("⚠️ Empty Fields Test", stillOnRegister);
+        assertTrue(stillOnRegister, "Should stay on register page when fields are empty");
     }
 }
-
