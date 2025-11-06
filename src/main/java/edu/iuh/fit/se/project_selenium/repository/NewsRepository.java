@@ -18,8 +18,8 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     
     // Tìm tin tức theo từ khóa trong tiêu đề hoặc nội dung
     @Query("SELECT n FROM News n WHERE n.isPublished = true AND " +
-           "(LOWER(n.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(n.content) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+           "((LOWER(n.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+           "LOWER(n.content) LIKE LOWER(CONCAT('%', :keyword, '%')))) " +
            "ORDER BY n.createdAt DESC")
     Page<News> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
     

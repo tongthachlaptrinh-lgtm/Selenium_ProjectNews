@@ -1,5 +1,5 @@
 -- Tạo dữ liệu mẫu cho News Portal
-
+use newsportal;
 -- Xóa dữ liệu cũ (nếu có)
 DELETE FROM comments;
 DELETE FROM news;
@@ -111,3 +111,6 @@ INSERT INTO comments (content, is_approved, created_at, news_id, user_id) VALUES
 ('Sống xanh là trách nhiệm của mỗi người. Cảm ơn bài viết!', true, NOW(), 5, 3),
 ('AI sẽ thay thế con người không? Tôi hơi lo lắng.', false, NOW(), 1, 2),
 ('World Cup 2026 ở đâu tổ chức vậy?', true, NOW(), 2, 2);
+
+select * from news
+where title like "%chứng khoán%"
