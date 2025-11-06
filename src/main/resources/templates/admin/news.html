@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<head>
+    <title>Quản lý bài viết - News Portal</title>
+</head>
+<body>
+    <main>
+        <div class="container mt-4">
+            <!-- Alert Messages -->
+            <div th:if="${success}" id="success-message" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <span th:text="${success}">Thành công!</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div th:if="${error}" id="error-message" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span th:text="${error}">Có lỗi xảy ra!</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Page Header -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2>
+                            <i class="fas fa-newspaper me-2"></i>Quản lý bài viết
+                        </h2>
+                        <div>
+                            <a href="/admin/news/add" class="btn btn-primary">
+                                <i class="fas fa-plus-circle me-2"></i>Tạo bài viết mới
+                            </a>
+                            <a href="/admin/dashboard" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Quay lại Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News List -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div th:if="${newsList != null and !newsList.isEmpty()}">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th style="width: 5%">#</th>
+                                                <th style="width: 10%">Hình ảnh</th>
+                                                <th style="width: 30%">Tiêu đề</th>
+                                                <th style="width: 15%">Danh mục</th>
+                                                <th style="width: 15%">Ngày tạo</th>
+                                                <th style="width: 10%">Tác giả</th>
+                                                <th style="width: 15%" class="text-center">Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="news, iterStat : ${newsList}">
+                                                <td th:text="${iterStat.count}">1</td>
+                                                <td>
+                                                    <img th:if="${news.imageUrl != null and !news.imageUrl.isEmpty()}"
+                                                         th:src="${news.imageUrl}"
+                                                         alt="News image"
+                                                         style="width: 60px; height: 40px; object-fit: cover; border-radius: 5px;">
+                                                    <div th:if="${news.imageUrl == null or news.imageUrl.isEmpty()}"
+                                                         class="bg-secondary text-white text-center"
+                                                         style="width: 60px; height: 40px; line-height: 40px; border-radius: 5px;">
+                                                        <i class="fas fa-image"></i>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <strong th:text="${news.title}">Tiêu đề bài viết</strong>
+                                                    <br>
+                                                    <small class="text-muted" th:text="${news.summary}">Tóm tắt...</small>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-info" th:text="${news.category != null ? news.category.name : 'Chưa phân loại'}">
+                                                        Danh mục
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <small th:text="${#temporals.format(news.createdAt, 'dd/MM/yyyy HH:mm')}">
+                                                        01/01/2025 10:00
+                                                    </small>
+                                                </td>
+                                                <td>
+                                                    <small th:text="${news.author != null ? news.author.username : 'N/A'}">
+                                                        admin
+                                                    </small>
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="btn-group btn-group-sm" role="group">
+                                                        <a th:href="@{/news/{id}(id=${news.id})}"
+                                                           class="btn btn-outline-info"
+                                                           title="Xem chi tiết">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a th:href="@{/admin/news/edit/{id}(id=${news.id})}"
+                                                           class="btn btn-outline-warning"
+                                                           title="Chỉnh sửa">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <button type="button"
+                                                                class="btn btn-outline-danger"
+                                                                th:onclick="'confirmDelete(' + ${news.id} + ')'"
+                                                                title="Xóa">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Empty State -->
+                            <div th:if="${newsList == null or newsList.isEmpty()}" class="text-center py-5">
+                                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                                <h4 class="text-muted">Chưa có bài viết nào</h4>
+                                <p class="text-muted mb-4">Bắt đầu bằng cách tạo bài viết đầu tiên của bạn</p>
+                                <a href="/admin/news/add" class="btn btn-primary">
+                                    <i class="fas fa-plus-circle me-2"></i>Tạo bài viết mới
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Xác nhận xóa
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Bạn có chắc chắn muốn xóa bài viết này không?</p>
+                        <p class="text-danger"><strong>Lưu ý:</strong> Hành động này không thể hoàn tác!</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <form id="deleteForm" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Xóa
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function confirmDelete(newsId) {
+                const deleteForm = document.getElementById('deleteForm');
+                deleteForm.action = '/admin/news/delete/' + newsId;
+
+                const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                deleteModal.show();
+            }
+        </script>
+    </main>
+</body>
+</html>
+

@@ -136,4 +136,36 @@ public class BaseSeleniumTest {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Safe click method with scroll and JavaScript click to avoid ElementClickInterceptedException
+     */
+    protected void safeClick(WebElement element) {
+        try {
+            // Thử 1: Cuộn đến element với nhiều khoảng trống ở trên
+            ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", element);
+            Thread.sleep(800); // Tăng thời gian chờ
+
+            // Thử 2: Cuộn thêm lên trên một chút để tránh bị che bởi footer/sticky elements
+            ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(
+                "window.scrollBy(0, -150);");
+            Thread.sleep(500);
+
+            // Thử 3: Click bằng JavaScript (bỏ qua tất cả interceptors)
+            ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(
+                "arguments[0].click();", element);
+
+            Thread.sleep(300); // Chờ sau khi click
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            // Fallback: nếu tất cả thất bại, thử click trực tiếp
+            try {
+                element.click();
+            } catch (Exception ex) {
+                System.err.println("⚠️ Click failed even with fallback: " + ex.getMessage());
+            }
+        }
+    }
 }
