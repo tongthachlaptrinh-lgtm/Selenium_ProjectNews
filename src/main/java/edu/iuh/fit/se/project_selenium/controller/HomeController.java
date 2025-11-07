@@ -54,7 +54,7 @@ public class HomeController {
         Pageable pageable = PageRequest.of(page, size);
         Page<News> searchResults = newsService.searchNews(keyword, pageable);
         
-        model.addAttribute("searchResults", searchResults);
+        model.addAttribute("results", searchResults);
         model.addAttribute("keyword", keyword);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", searchResults.getTotalPages());

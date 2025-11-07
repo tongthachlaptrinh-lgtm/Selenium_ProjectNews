@@ -39,7 +39,7 @@ public class CommentTest extends BaseSeleniumTest {
         printTestInfo("Bước 2: Từ trang chủ, nhấp vào bài viết đầu tiên");
         navigateToHomePage();
         WebElement firstNewsLink = wait.until(ExpectedConditions.elementToBeClickable(
-            By.cssSelector(".card .card-title a, .news-card a, .card a")
+                By.cssSelector(".card .card-title a, .news-card a, .card a")
         ));
         firstNewsLink.click();
         printTestInfo("✓ Đã nhấp vào bài viết");
@@ -81,8 +81,8 @@ public class CommentTest extends BaseSeleniumTest {
 
         // 1. Kiểm tra trang đã tải lại (có thông báo thành công hoặc comments section)
         wait.until(ExpectedConditions.or(
-            ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
-            ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
+                ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
+                ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
         ));
 
         // 2. Kiểm tra thông báo thành công
@@ -149,7 +149,7 @@ public class CommentTest extends BaseSeleniumTest {
         // Kiểm tra có hiện thông báo yêu cầu đăng nhập
         boolean loginPromptDisplayed = driver.findElements(By.cssSelector(".card-body.text-center")).size() > 0;
         boolean loginPromptText = driver.getPageSource().contains("Đăng nhập để bình luận");
-        
+
         // Kiểm tra form bình luận KHÔNG hiển thị
         boolean commentFormNotDisplayed = driver.findElements(By.id("comment-content")).size() == 0;
 
@@ -205,7 +205,7 @@ public class CommentTest extends BaseSeleniumTest {
         // Kiểm tra vẫn còn ở trang chi tiết bài viết (HTML5 validation ngăn chặn)
         String currentUrl = driver.getCurrentUrl();
         boolean stillOnNewsPage = currentUrl.contains("/news/");
-        
+
         printTestResult("TC_COMMENT_03", stillOnNewsPage);
         assertTrue(stillOnNewsPage, "TC_COMMENT_03: Phải ở lại trang khi gửi bình luận rỗng");
     }
@@ -230,7 +230,7 @@ public class CommentTest extends BaseSeleniumTest {
 
         // Kiểm tra có bình luận hoặc thông báo "chưa có bình luận"
         boolean hasCommentsOrMessage = driver.findElements(By.className("comment-item")).size() > 0 ||
-                                       driver.findElements(By.id("no-comments-message")).size() > 0;
+                driver.findElements(By.id("no-comments-message")).size() > 0;
 
         boolean testPassed = commentsSectionExists && hasCommentsOrMessage;
         printTestResult("TC_COMMENT_04", testPassed);
@@ -266,8 +266,8 @@ public class CommentTest extends BaseSeleniumTest {
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", submitButton);
 
         wait.until(ExpectedConditions.or(
-            ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
-            ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
+                ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
+                ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
         ));
 
         boolean commentAppears = driver.getPageSource().contains(longComment.substring(0, 50));
@@ -303,8 +303,8 @@ public class CommentTest extends BaseSeleniumTest {
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", submitButton);
 
         wait.until(ExpectedConditions.or(
-            ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
-            ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
+                ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
+                ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
         ));
 
         boolean commentAppears = driver.getPageSource().contains("Bình luận với ký tự đặc biệt");
@@ -340,8 +340,8 @@ public class CommentTest extends BaseSeleniumTest {
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", submitButton);
 
         wait.until(ExpectedConditions.or(
-            ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
-            ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
+                ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
+                ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
         ));
 
         boolean commentAppears = driver.getPageSource().contains(vietnameseComment);
@@ -381,8 +381,8 @@ public class CommentTest extends BaseSeleniumTest {
             ((JavascriptExecutor) driver).executeScript("arguments[0].click();", submitButton);
 
             wait.until(ExpectedConditions.or(
-                ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
-                ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
+                    ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
+                    ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
             ));
 
             if (!driver.getPageSource().contains(comment)) {
@@ -470,15 +470,15 @@ public class CommentTest extends BaseSeleniumTest {
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", submitButton);
 
         wait.until(ExpectedConditions.or(
-            ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
-            ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
+                ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
+                ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
         ));
 
         // Kiểm tra script không được thực thi (text được escape)
         String pageSource = driver.getPageSource();
         boolean scriptNotExecuted = !pageSource.contains("<script>alert('XSS')</script>") ||
-                                    pageSource.contains("&lt;script&gt;") ||
-                                    pageSource.contains("alert(&#39;XSS&#39;)");
+                pageSource.contains("&lt;script&gt;") ||
+                pageSource.contains("alert(&#39;XSS&#39;)");
 
         printTestResult("TC_COMMENT_10", scriptNotExecuted);
         assertTrue(scriptNotExecuted, "TC_COMMENT_10: Script tag phải được escape để tránh XSS");
@@ -511,15 +511,15 @@ public class CommentTest extends BaseSeleniumTest {
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", submitButton);
 
         wait.until(ExpectedConditions.or(
-            ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
-            ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
+                ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
+                ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
         ));
 
         // Kiểm tra HTML được escape
         String pageSource = driver.getPageSource();
         boolean htmlEscaped = pageSource.contains("&lt;b&gt;") ||
-                             pageSource.contains("&lt;i&gt;") ||
-                             !pageSource.contains("<b>Bold text</b>");
+                pageSource.contains("&lt;i&gt;") ||
+                !pageSource.contains("<b>Bold text</b>");
 
         printTestResult("TC_COMMENT_11", htmlEscaped);
         assertTrue(htmlEscaped, "TC_COMMENT_11: HTML tags phải được escape");
@@ -575,8 +575,8 @@ public class CommentTest extends BaseSeleniumTest {
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", submitButton);
 
         wait.until(ExpectedConditions.or(
-            ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
-            ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
+                ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
+                ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
         ));
 
         // Kiểm tra bình luận hiển thị kèm tên user
@@ -612,17 +612,17 @@ public class CommentTest extends BaseSeleniumTest {
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", submitButton);
 
         wait.until(ExpectedConditions.or(
-            ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
-            ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
+                ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
+                ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
         ));
 
         // Kiểm tra có hiển thị thời gian (tìm các pattern thời gian phổ biến)
         String pageSource = driver.getPageSource();
         boolean hasTimestamp = pageSource.contains("giây trước") ||
-                              pageSource.contains("phút trước") ||
-                              pageSource.contains("giờ trước") ||
-                              pageSource.contains("/") || // dd/mm/yyyy
-                              pageSource.contains("-"); // yyyy-mm-dd
+                pageSource.contains("phút trước") ||
+                pageSource.contains("giờ trước") ||
+                pageSource.contains("/") || // dd/mm/yyyy
+                pageSource.contains("-"); // yyyy-mm-dd
 
         printTestResult("TC_COMMENT_14", hasTimestamp);
         assertTrue(hasTimestamp, "TC_COMMENT_14: Bình luận phải hiển thị thời gian");
@@ -653,8 +653,8 @@ public class CommentTest extends BaseSeleniumTest {
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", submitButton);
 
         wait.until(ExpectedConditions.or(
-            ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
-            ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
+                ExpectedConditions.presenceOfElementLocated(By.className("alert-success")),
+                ExpectedConditions.presenceOfElementLocated(By.id("comments-section"))
         ));
 
         // Kiểm tra textarea đã được xóa sạch
