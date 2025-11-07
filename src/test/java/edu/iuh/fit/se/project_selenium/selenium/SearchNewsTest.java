@@ -144,7 +144,9 @@ public class SearchNewsTest extends BaseSeleniumTest {
         // First navigate to a news detail page
         navigateToHomePage();
         
-        // Find and click on first news article (without searching first)
+        // Click on first news article
+        WebElement searchButton1 = driver.findElement(By.cssSelector("button[type='submit']"));
+        searchButton1.click();
         WebElement firstNewsLink = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".card a")));
         firstNewsLink.click();
         printTestInfo("Clicked on first news article");
@@ -156,14 +158,10 @@ public class SearchNewsTest extends BaseSeleniumTest {
         driver.navigate().back();
         wait.until(ExpectedConditions.urlContains("/"));
         
-        // Wait for page to fully load and search form to be available
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.name("keyword")));
-
-        // Perform search - use the navbar search form which is always available
-        WebElement searchInput = driver.findElement(By.name("keyword"));
-        searchInput.clear(); // Clear any existing text
+        // Perform search
+        WebElement searchInput = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("keyword")));
         searchInput.sendKeys("Thể thao");
-        WebElement searchButton = driver.findElement(By.cssSelector("form[action='/search'] button[type='submit']"));
+        WebElement searchButton = driver.findElement(By.cssSelector("button[type='submit']"));
         searchButton.click();
         
         // Wait for search results

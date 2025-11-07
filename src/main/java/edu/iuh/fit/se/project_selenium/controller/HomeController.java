@@ -85,4 +85,9 @@ public class HomeController {
     public String contact() {
         return "contact";
     }
+
+    @GetMapping("/access-denied")
+    public String accessDenied() {
+        return "access-denied";
+    }
 }
